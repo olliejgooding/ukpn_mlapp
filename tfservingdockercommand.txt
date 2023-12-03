@@ -1,0 +1,31 @@
+#be really careful about spaces
+
+docker run -p 8501:8501 --name tfserving_classifier --mount type=bind,source=C:/Users/ollie/OneDrive/Documents/Coding/UKPN/UKPN_ML_app/classifier/saved_models,target=/models/classifier -e MODEL_NAME=classifier -t tensorflow/serving
+
+
+#check what dockers are going
+docker ps
+
+docker stop /tfserving_classifier
+
+docker rm /tfserving_classifier
+
+docker pull tensorflow/serving
+
+
+docker kill [container id]
+
+
+
+http://localhost:8501/v1/models/classifier
+
+http://localhost:8501/v1/models/classifier/metadata
+
+
+url= "http://localhost:8501/v1/models/classifier:predict"
+data= json.dumps({"inputs":{"review": ["Education and Skills Funding AgencyESFA Update contains the latest information and actions from the Education and Skills Funding Agency for academies, colleges, local authorities and further education providers. ESFA"]}})
+json_response = requests.post(url, data=data)
+print(json_response.text)
+
+
+docker run -p 8501:8501 --name tfserving_classifier --mount type=bind,source=C:/Users/ollie/OneDrive/Documents/Coding/UKPN/UKPN_ML_app/classifier/saved_models,target=/models/classifier -e MODEL_NAME=classifier -t tensorflow/serving
