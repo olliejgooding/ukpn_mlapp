@@ -1,16 +1,22 @@
+RUN apk update
+RUN apk add --no-cache --update \
+	py3-pip bash g++\
+    python3 python3-dev gcc \
+    gfortran musl-dev \
+    libffi-dev openssl-dev
+
+
+ADD ./requirements.txt /tmp/requirements.txt
+# Install dependencies
+RUN pip3 install --no-cache-dir -q -r /tmp/requirements.txt
+
+
 FROM tensorflow/serving
+COPY classifier/saved_models classifier/saved_models
 
-ENV MODEL_BASE_PATH /models
-ENV MODEL_NAME classifier
-
-COPY models/classifier /models/classifier
-
-# Fix because base tf_serving_entrypoint.sh does not take $PORT env variable while $PORT is set by Heroku
-# CMD is required to run on Heroku
-COPY tf_serving_entrypoint.sh /usr/bin/tf_serving_entrypoint.sh
-RUN chmod +x /usr/bin/tf_serving_entrypoint.sh
-ENTRYPOINT []
-CMD ["/usr/bin/tf_serving_entrypoint.sh"]
+# Run the app.  CMD is required to run on Heroku
+# $PORT is set by Heroku
+CMD -p 8501:8501 --name tfserving_classifier --mount type=bind,source=C:/Users/ollie/OneDrive/Documents/Coding/UKPN/UKPN_ML_app/classifier/saved_models,target=/models/classifier -e MODEL_NAME=classifier -t tensorflow/serving
 
 
-tensorflow_model_server --port=8500 --rest_api_port="${PORT}" --model_name="${MODEL_NAME}" --model_base_path="${MODEL_BASE_PATH}"/"${MODEL_NAME}" "$@"
+#tensorflow_model_server --port=8500 --rest_api_port="${PORT}" --model_name="${MODEL_NAME}" --model_base_path="${MODEL_BASE_PATH}"/"${MODEL_NAME}" "$@"

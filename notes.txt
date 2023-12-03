@@ -1,1 +1,0 @@
-Just send the ML API a string and stop overcomplicating shit
