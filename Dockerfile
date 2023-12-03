@@ -10,8 +10,9 @@ COPY ./requirements.txt /requirements.txt
 RUN apt-get update && \
     apt-get install -y python3 && \
     apt-get install -y python3-pip && \
-    pip3 install --upgrade pip && \
-    pip3 install --no-cache-dir -r requirements.txt
+    pip3 install --upgrade pip
+
+RUN pip3 install --no-cache-dir -r requirements.txt
 
 # Create the model directory and copy the saved model
 RUN mkdir -p /models/classifier
