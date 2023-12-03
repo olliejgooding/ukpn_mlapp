@@ -1,22 +1,19 @@
-RUN apk update
-RUN apk add --no-cache --update \
-	py3-pip bash g++\
-    python3 python3-dev gcc \
-    gfortran musl-dev \
-    libffi-dev openssl-dev
+# First stage: Build dependencies and install Python packages
+FROM tensorflow/tensorflow:latest AS builder
 
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        python3 python3-dev gcc gfortran libffi-dev openssl-dev
 
-ADD ./requirements.txt /tmp/requirements.txt
-# Install dependencies
-RUN pip3 install --no-cache-dir -q -r /tmp/requirements.txt
+COPY ./requirements.txt /tmp/requirements.txt
 
+RUN pip3 install --no-cache-dir -r /tmp/requirements.txt
 
+# Second stage: Copy only necessary files and the installed Python packages
 FROM tensorflow/serving
-COPY classifier/saved_models classifier/saved_models
 
-# Run the app.  CMD is required to run on Heroku
-# $PORT is set by Heroku
-CMD -p 8501:8501 --name tfserving_classifier --mount type=bind,source=C:/Users/ollie/OneDrive/Documents/Coding/UKPN/UKPN_ML_app/classifier/saved_models,target=/models/classifier -e MODEL_NAME=classifier -t tensorflow/serving
+COPY --from=builder /usr/local/lib/python3.8/site-packages /usr/local/lib/python3.8/site-packages
 
+COPY classifier/saved_models /models/classifier
 
-#tensorflow_model_server --port=8500 --rest_api_port="${PORT}" --model_name="${MODEL_NAME}" --model_base_path="${MODEL_BASE_PATH}"/"${MODEL_NAME}" "$@"
+CMD ["tensorflow_model_server", "--port=8501", "--rest_api_port=8502", "--model_name=classifier", "--model_base_path=/models/classifier"]
