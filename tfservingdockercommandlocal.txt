@@ -1,5 +1,7 @@
 #be really careful about spaces
 
+docker pull tensorflow/serving
+
 docker run -p 8501:8501 --name tfserving_classifier --mount type=bind,source=C:/Users/ollie/OneDrive/Documents/Coding/UKPN/UKPN_ML_app/classifier/saved_models,target=/models/classifier -e MODEL_NAME=classifier -t tensorflow/serving
 
 
@@ -12,12 +14,16 @@ docker rm /tfserving_classifier
 
 docker pull tensorflow/serving
 
+docker build -t classifier:v1 .
 
 docker kill [container id]
 
+docker build --no-cache -t my_tf_serving_image:latest .
+docker build -t my_tf_serving_image:latest .
 
+docker run -p 8501:8501 --name classifier my_tf_serving_image:latest
 
-http://localhost:8501/v1/models/classifier
+http://localhost:8502/v1/models/classifier
 
 http://localhost:8501/v1/models/classifier/metadata
 
@@ -29,3 +35,20 @@ print(json_response.text)
 
 
 docker run -p 8501:8501 --name tfserving_classifier --mount type=bind,source=C:/Users/ollie/OneDrive/Documents/Coding/UKPN/UKPN_ML_app/classifier/saved_models,target=/models/classifier -e MODEL_NAME=classifier -t tensorflow/serving
+
+docker run -p 8501:8501 --name classifier_container classifier:v1
+
+
+#no dependencies!!!
+# Install dependencies
+RUN pip3 install -q -r /tmp/requirements.txt
+COPY ./requirements.txt /tmp/requirements.txt
+
+
+RUN apt-get update && \
+    apt-get install -y python3 && \
+    apt-get install -y python3-pip && \
+    pip3 install --upgrade pip
+
+ # Command to run on container start
+CMD ["tensorflow_model_server", "--port=8501", "--rest_api_port=8502", "--model_name=classifier", "--model_base_path=/models/classifier"]

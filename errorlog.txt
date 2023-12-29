@@ -1,0 +1,10 @@
+2023-12-12T08:15:08.459230+00:00 heroku[web.1]: State changed from starting to crashed
+2023-12-12T08:15:08.462960+00:00 heroku[web.1]: State changed from crashed to starting
+2023-12-12T08:15:13.397373+00:00 heroku[web.1]: Starting process with command `/usr/bin/tf_serving_entrypoint.sh`
+2023-12-12T08:15:16.615700+00:00 app[web.1]: 2023-12-12 08:15:16.615557: I external/org_tensorflow/tensorflow/core/util/port.cc:111] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+2023-12-12T08:15:16.617857+00:00 app[web.1]: 2023-12-12 08:15:16.617765: I tensorflow_serving/model_servers/server.cc:74] Building single TensorFlow model file config:  model_name: classifier model_base_path: /models/classifier
+2023-12-12T08:15:16.618137+00:00 app[web.1]: 2023-12-12 08:15:16.618095: I tensorflow_serving/model_servers/server_core.cc:467] Adding/updating models.
+2023-12-12T08:15:16.618143+00:00 app[web.1]: 2023-12-12 08:15:16.618132: I tensorflow_serving/model_servers/server_core.cc:596]  (Re-)adding model: classifier
+2023-12-12T08:15:16.726334+00:00 app[web.1]: 2023-12-12 08:15:16.726217: F external/org_tensorflow/tensorflow/tsl/platform/default/env.cc:74] Check failed: ret == 0 (11 vs. 0)Thread tf_ModelDiskSizePool creation via pthread_create() failed.
+2023-12-12T08:15:16.733487+00:00 app[web.1]: /usr/bin/tf_serving_entrypoint.sh: line 3:     5 Aborted                 tensorflow_model_server --port=8500 --rest_api_port=8501 --model_name=classifier --model_base_path=/models/classifier "$@"
+2023-12-12T08:15:16.810393+00:00 heroku[web.1]: Process exited with status 134

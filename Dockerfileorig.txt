@@ -1,0 +1,28 @@
+# Use an official TensorFlow Serving runtime as a parent image
+ARG TF_SERVING_VERSION=latest
+ARG TF_SERVING_BUILD_IMAGE=tensorflow/serving:${TF_SERVING_VERSION}-devel
+
+FROM ${TF_SERVING_BUILD_IMAGE} as build_image
+FROM ubuntu:20.04
+
+COPY --from=build_image /usr/local/bin/tensorflow_model_server /usr/bin/tensorflow_model_server
+
+# Create the model directory and copy the saved model
+RUN mkdir -p /models/classifier
+COPY classifier/saved_models /models/classifier
+
+
+# Define environment variable
+#ENV MODEL_NAME=classifier
+
+# Command to run on container start
+#CMD tensorflow_model_server --port=8501 --rest_api_port=$PORT  --model_name=classifier --model_base_path=/models/classifier
+
+RUN echo '#!/bin/bash \n\n\
+tensorflow_model_server --port=8500 --rest_api_port=$PORT \
+--model_name=classifier --model_base_path=/models/classifier \
+"$@"' > /usr/bin/tf_serving_entrypoint.sh \
+&& chmod +x /usr/bin/tf_serving_entrypoint.sh
+
+ENTRYPOINT []
+CMD ["/usr/bin/tf_serving_entrypoint.sh"]
