@@ -1,27 +1,28 @@
-FROM tensorflow/serving:latest-devel
+#Grab the latest alpine image
+FROM python:3.9.18-slim
 
 
-ENV TF_NUM_INTRAOP_THREADS=1
-ENV TF_NUM_INTEROP_THREADS=1
-ENV TF_CPP_MIN_LOG_LEVEL=0
 
-# Create the model directory and copy the saved model
-RUN mkdir -p /models/classifier
-COPY classifier/saved_models /models/classifier
+ADD ./requirements.txt /tmp/requirements.txt
 
+#make virt env because otherwise you get some overlap or something
+ENV VIRTUAL_ENV=/opt/venv
+RUN python3 -m venv $VIRTUAL_ENV
+ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
-RUN echo '#!/bin/bash \n\n\
-tensorflow_model_server --port=8500 --rest_api_port=${PORT} \
---model_name=classifier --model_base_path=/models/classifier \
---tensorflow_session_parallelism=1 \
-"$@"' > /usr/bin/tf_serving_entrypoint.sh \
-&& chmod +x /usr/bin/tf_serving_entrypoint.sh
+# Install dependencies
+RUN pip3 install --upgrade pip
+RUN pip3 install --no-cache-dir -q -r /tmp/requirements.txt
+RUN [ "python3", "-c", "import nltk; nltk.download('punkt', download_dir='/usr/lib/nltk_data')" ]
 
 
-# Run the image as a non-root user
-RUN adduser myuser1
-USER myuser1
+# Add our code
+ADD ./webapp /opt/webapp/
+COPY ./classifier /opt/webapp/classifier
+
+WORKDIR /opt/webapp
 
 
-ENTRYPOINT []
-CMD ["/usr/bin/tf_serving_entrypoint.sh"]
+# Run the app.  CMD is required to run on Heroku
+# $PORT is set by Heroku			
+CMD gunicorn --bind 0.0.0.0:$PORT wsgi

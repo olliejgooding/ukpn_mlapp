@@ -26,3 +26,5 @@ tensorflow_model_server --port=8500 --rest_api_port=$PORT \
 
 ENTRYPOINT []
 CMD ["/usr/bin/tf_serving_entrypoint.sh"]
+
+#heroku container:push web --app ml-scrape-classify
