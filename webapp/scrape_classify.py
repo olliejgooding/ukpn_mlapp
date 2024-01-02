@@ -23,7 +23,7 @@ from summa import keywords
 
 import os
 
-model_path = os.path.join("classifier", "saved_models", "1701367313")
+model_path = os.path.join("classifier", "saved_models", "1704218565")
 
 import tensorflow as tf
 model=tf.saved_model.load(model_path)

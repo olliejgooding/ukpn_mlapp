@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 import pandas as pd
 import pathlib
 
-path = pathlib.Path(r"C:\Users\ollie\OneDrive\Documents\Coding\UKPN\Scraperdev\Policy Patrol Recommender training data preprocess v2.xlsx")
+path = pathlib.Path(r"C:\Users\ollie\OneDrive\Documents\Coding\UKPN\Scraperdev\traindatav3.xlsx")
 df = pd.read_excel(path)
 df = df.sample(frac=1)
 
